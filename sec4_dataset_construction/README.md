@@ -57,8 +57,8 @@ python scripts/construction_tables.py
 
 Table "T vs L versions" is reproduced exactly (79/79 cases, 1,030/1,022 criteria, 35/44 conversations, 772/240
 criteria, 226/289/141 LLM draft, 42 physician rewrite, 74 Stage-3/meta-review, 18/10/14 deleted/added/re-weighted).
-Table "pipeline stages" is reproduced for all criterion counts (504/526, 831, 149, 45, 5/1, 1,026, 1,020, 955, 65,
-74, 14/1/9/14, 1,022) and the adopted/rewritten turn counts (175/3/13). Two turn rows depend on the definition:
-the script counts "LLM draft identical to T" by text identity (149/42; the paper's table gives 139/52) and
-"meta-review: text modified" as turns whose L text differs from the Stage-2 adopted text (5; the paper gives 6).
-Stage-3 conversation flags are reported per case (4 cases, 12 turns).
+Table "pipeline stages" is reproduced for every row: criteria 504/526 (the LLM's own `translate` vs `edit`/`adapt`
+label), 831, 149, 45, 5/1, 1,026, 1,020, 955, 65 (34 cases), 74, 14/1/9/14, 1,022; turns 154/37 (self-reported type;
+149/42 by text identity), 175/3/13 adopted LLM draft / translation / rewritten, 5 turns modified at meta-review.
+Stage-3 conversation flags are reported per case (4 cases, 12 turns); the paper's table lists the 4 flagged conversations
+in the turn column.
