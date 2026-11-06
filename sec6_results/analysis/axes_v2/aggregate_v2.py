@@ -18,6 +18,7 @@ Same-answer comparison: cases whose T and L conversations are the same, so each 
 Writes <out>/{analysis.json, analysis.md, items.jsonl, scenario.jsonl} (default <exp>/analysis/out_axes_v2).
 """
 import argparse
+import gzip
 import json
 import statistics as st
 import sys
@@ -69,7 +70,12 @@ R9RUNS = ('A1', 'A2', 'B1', 'B2')
 
 
 def read(p):
-    return [json.loads(x) for x in Path(p).open(encoding='utf-8') if x.strip()]
+    p = Path(p)
+    if not p.exists() and Path(str(p) + '.gz').exists():
+        p = Path(str(p) + '.gz')
+    opener = gzip.open if str(p).endswith('.gz') else open
+    with opener(p, 'rt', encoding='utf-8') as f:
+        return [json.loads(x) for x in f if x.strip()]
 
 
 def pct(xs, q):

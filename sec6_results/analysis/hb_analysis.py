@@ -10,6 +10,7 @@ the unclipped means, and the output says whether clipping changed any value.
 Labels may be booleans (real runs) or probabilities in [0, 1] (expected-value dummy runs); every statistic that is
 linear in the labels then gives its expectation.
 """
+import gzip
 import hashlib
 import json
 import math
@@ -49,13 +50,21 @@ GRADER_VENDOR = {'qwen38_grader_none': 'alibaba', 'qwen38_grader_low': 'alibaba'
 
 # ------------------------------------------------------------------ small helpers
 def read_jsonl(p):
-    with open(p, encoding='utf-8') as f:
+    p = Path(p)
+    if not p.exists() and Path(str(p) + '.gz').exists():
+        p = Path(str(p) + '.gz')
+    opener = gzip.open if str(p).endswith('.gz') else open
+    with opener(p, 'rt', encoding='utf-8') as f:
         return [json.loads(line) for line in f if line.strip()]
 
 
 def sha256_file(p):
+    p = Path(p)
+    if not p.exists() and Path(str(p) + '.gz').exists():
+        p = Path(str(p) + '.gz')
     h = hashlib.sha256()
-    with open(p, 'rb') as f:
+    opener = gzip.open if str(p).endswith('.gz') else open
+    with opener(p, 'rb') as f:
         for chunk in iter(lambda: f.read(1 << 20), b''):
             h.update(chunk)
     return h.hexdigest()
@@ -289,8 +298,9 @@ class Grades:
                 raise ValueError(f'{d}: grader {man["model_id"]} differs from {self.grader}')
             self.grader = man['model_id']
             if check_sha:
+                rel = man.get('released_dataset_sha256', {})  # hash of the released (canary-extended) file
                 for c, h in man.get('dataset_sha256', {}).items():
-                    if c in data.sha and data.sha[c] != h:
+                    if c in data.sha and data.sha[c] not in (h, rel.get(c)):
                         raise ValueError(f'{d}: dataset {c} hash differs from data/')
             res_path = d / 'results.jsonl'
             res = {x['task_id']: x.get('criteria_met') for x in read_jsonl(res_path)} if res_path.exists() else {}
